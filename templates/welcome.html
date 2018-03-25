@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Fake Seller</title>
+	<style type="text/css">
+		.label{text-align: right}
+		.error{color:red;}
+	</style>
+</head>
+<body>
+
+	<h2>Welcome all Brands to the Fake Seller Detection Portal</h2>
+
+	<h3>Sign in</h3>
+
+	<h4 class="error">{{msg}}</h4>
+
+	<form action="{{url_for('signin')}}" method="POST">
+		<table>
+		<tr>
+			<td class="label">
+				Username 
+			</td>
+			<td>
+				<input type="text" name="username" required>
+			</td>
+		</tr>
+
+		<tr>
+			<td class="label">
+				Password 
+			</td>
+			<td>
+				<input type="password" name="password" required>
+			</td>
+		</tr>
+	</table>
+
+	<input type="submit" value="Brand Signin">
+	</form>
+
+	<p>New Brand?
+		<a href="{{url_for('signup')}}"> Register here !</a>
+	</p>
+
+</body>
+</html>

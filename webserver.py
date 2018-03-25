@@ -1,23 +1,23 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import cgi
-
-from database_setup import Base, Brand, SubBrand, Seller
+from flask import Flask, render_template, request, redirect, url_for, flash, session, escape, make_response
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Brand, Seller, SubBrand
 
-import os
 import re
 import random
 import hashlib
 import hmac
 from string import letters
 
-engine=create_engine('sqlite:///restaurantMenu.db')
-Base.metadata.bind=engine
-DBSession=sessionmaker(bind=engine)
-session=DBSession()
+app = Flask(__name__)
 
-secret='fguqq7ye782ewiuqhdd	eo92`-112o`2=-=`ii'
+engine = create_engine('sqlite:///BrandSeller.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+secret='gduiwdhe28ey3812983uio12rhe3900-`--'
 
 def make_secure_val(val):
 	return '%s|%s'%(val,hmac.new(secret,val).hexdigest())
@@ -26,6 +26,29 @@ def check_secure_val(secure_val):
 	val=secure_val.split('|')[0]
 	if secure_val==make_secure_val(val):
 		return val
+
+def set_secure_cookie(name,val):
+	resp=make_response(redirect(url_for('profile')))
+	resp.set_cookie(name,val)
+
+def read_secure_cookie(name):
+	uid=request.cookies.get(name)
+	return uid
+
+def login(user):
+	set_secure_cookie('user_id',user)
+
+def logout():
+	response.headers.add_header('Set-Cookie','user_id=; Path=/')
+
+def initialize(*a,**kw):
+	initialize(*a,**kw)
+	uid=read_secure_cookie('user_id')
+	q=session.query(Brand).filter_by(id=uid).one()
+	user=uid
+	if user and q:
+		return user
+
 def make_salt(length=5):
 	return ''.join(random.choice(letters) for x in xrange(length))
 
@@ -39,91 +62,90 @@ def valid_pw(name,password,h):
 	salt=h.split(',')[0]
 	return h==make_pw_hash(name,password,salt)
 
+USER_RE=re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+def valid_username(username):
+	return username and USER_RE.match(username)
 
+PASS_RE=re.compile(r"^.{3,20}$")
+def valid_password(password):
+	return password and PASS_RE.match(password)
 
-class webserverHandler(BaseHTTPRequestHandler):
+EMAIL_RE=re.compile(r"^[\S]+@[\S]+\.[\S]+$")
+def valid_email(email):
+	return not email or EMAIL_RE.match(email)
 
-	def set_secure_cookie(self, name, val):
-		cookie_val=make_secure_val(val)
-		self.send_header('Set-Cookie','%s=%s;Path=/'%(name,cookie_val))
-		self.end_headers()
+@app.route('/',methods=['POST','GET'])
+def signin():
+	if request.method=='POST':
+		username=request.form['username']
+		password=request.form['password']
+		pw=make_pw_hash(username,password)
+		u=session.query(Brand).filter_by(username=username, password=pw).all()
+		if u:
+			resp=make_session(redirect('profile'))
+			resp.set_cookie('user_id',str(u[0].id))
+			return resp
+		msg="Invalid Login!!"
+		return render_template('welcome.html',msg=msg)
+	return render_template('welcome.html')
 
-	def read_secure_cookie(self,name):
-		cookie_val=cgi.parse_cookie(name)
-		return cookie_val and check_secure_val(cookie_val)
+@app.route('/signup',methods=['POST','GET'])
+def signup():
+	if request.method=='POST':
+		have_error=False
+		username=request.form['username']
+		name=request.form['brand']
+		password=request.form['password']
+		verify=request.form['verify']
+		email=request.form['email']
 
-	def initialize(self, *a, **kw):
-		uid=self.read_secure_cookie('user_id')
-		self.user=uid and User.by_id(int(uid))
+		params=dict(username=username, email=email)
 
-	def do_GET(self):
-		if self.path.endswith("/"):
-			self.send_response(200)
-			self.send_header('Content-type','text/html')
-			self.end_headers()
+		if not valid_username(username):
+			params['error_username']="This is not a valid username"
+			have_error=True
 
-			output=""
-			output+="<html><body>"
-			output+="<h2>Sign In</h2>"
-			output+="<form method='POST' enctype='multipart/form-data' action=''>"
-			output+="<input type='text' name='username' required placeholder='Username'></br>"
-			output+="<input type='password' name=password' required' placeholder='Password'></br>"
-			output+="<input type='submit' name='Log In'>"
-			output+="</form><a href='/signup'>Signup</a></body></html>"
-			self.wfile.write(output)
-			return
+		if not valid_password(password):
+			params['error_password']="That wasn't a valid password"
+			have_error=True
+		elif password!=verify:
+			params['error_verify']="Your passwords didn't match"
+			have_error=True
 
-	def do_POST(self):
-		if self.path.endswith("/"):
-			ctype, pdict=cgi.parse_header(
-				self.headers.getheader('content-type'))
-			if ctype=='multipart/form-data':
-				fields=cgi.parse_multipart(self.rfile,pdict)
-				username=fields.get('username')
-				pw_hash=fields.get('password')
-				pw_hash=make_pw_hash(username,pw_hash)
-				u=session.query(Brand).filter_by(username=username,password=pw_hash).one()
-				self.login(u.id)
+		if not valid_email(email):
+			params['error_email']="Thats's not a valid email-id"
+			have_error=True
 
-				self.send_response(301)
-				self.send_header('Content-type','text/html')
-				self.login(u.id)
-				self.send_header('Location','/profile')
-				self.end_headers()
+		u=session.query(Brand).filter_by(name=name).all()
+		if u:
+			params['brand_error']="This brand name already exists"
+			have_error=True
 
-		if self.path.endswith("/signup"):
-			ctype, pdict=cgi.parse_header(
-				self.headers.getheader('content-type'))
-			if ctype=='multipart/form-data':
-				fields=cgi.parse_multipart(self.rfile.pdict)
-				name=fields.get('brandName')
-				username=fields.get('username')
-				pw_hash=fields.get('password')
-				pw_hash=make_pw_hash(username,pw_hash)
-				email=fields.get('email')
-				newBrand=Brand(name=name[0],username=username[0],password=pw_hash[0],email=email[0])
-				session.add(newBrand)
-				session.commit()
+		if have_error:
+			return render_template('signup.html',**params)
+		else:
+			pw=make_pw_hash(username,password)
+			newbrand=Brand(name=name,username=username,password=pw,enail=email)
+			session.add(newbrand)
+			session.commit()
 
-				u=session.query(Brand).filter_by(username=username,password=pw_hash).one()
+			id=session.query(Brand).filter_by(name=name, username=username, password=pw).one()
 
-				self.send_response(301)
-				self.send_header('Content-type','text/html')
-				self.login(u.id)
-				self.send_header('Location','/profile')
-				self.end_headers()
+			resp=make_response(redirect('profile'))
+			resp.set_cookie('user_id',str(id.id))
+			return resp
 
+	return render_template('signup.html')
 
-def main():
-	try:
-		port=8080
-		server=HTTPServer(('',port), webserverHandler)
-		print "Server running on port %s"%port
-		server.serve_forever()
+@app.route('/profile')
+def profile():
+	if request.cookies.get('user_id'):
+		return "Welcome"+request.cookies.get('user_id')
+	else:
+		return redirect(url_for('signup'))
 
-	except:
-		print "^C entered, stopping web server...!!"
-		server.socket.close()
 
 if __name__ == '__main__':
-	main()
+    app.secret_key = 'super_secret_key'
+    app.debug = True
+    app.run(host='0.0.0.0', port=5000)

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Signup</title>
+	<style type="text/css">
+		.label{text-align: right}
+		.error{color:red;}
+	</style>
+</head>
+<body>
+	<h2>Sign Up</h2>
+	<form action="{{url_for('signup')}}" method="POST">
+		
+		<table>
+			<tr>
+				<td class="label">
+					Username 
+				</td>
+				<td>
+					<input type="text" name="username" value="{{username}}">
+				</td>
+				<td class="error">
+					{{error_username}}
+				</td>
+			</tr>
+
+			<tr>
+				<td class="label">
+					Brand Name  
+				</td>
+				<td>
+					<input type="text" name="brand" value="">
+				</td>
+				<td class="error">
+					{{brand_error}}
+				</td>
+			</tr>
+
+			<tr>
+				<td class="label">
+					Password 
+				</td>
+				<td>
+					<input type="password" name="password" value="">
+				</td>
+				<td class="error">
+					{{error_password}}
+				</td>
+			</tr>
+
+			<tr>
+				<td class="label">
+					Verify Password  
+				</td>
+				<td>
+					<input type="password" name="verify" value="">
+				</td>
+				<td class="error">
+					{{error_verify}}
+				</td>
+			</tr>
+
+			<tr>
+				<td class="label">
+					Email-id  
+				</td>
+				<td>
+					<input type="email" name="email" value="{{email}}">
+				</td>
+				<td class="error">
+					{{error_email}}
+				</td>
+			</tr>
+		</table>
+
+		<input type="submit" value="Sign up">
+	</form>
+
+</body>
+</html>
