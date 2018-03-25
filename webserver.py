@@ -79,11 +79,12 @@ def signin():
 	if request.method=='POST':
 		username=request.form['username']
 		password=request.form['password']
-		pw=make_pw_hash(username,password)
-		u=session.query(Brand).filter_by(username=username, password=pw).all()
-		if u:
-			resp=make_session(redirect('profile'))
-			resp.set_cookie('user_id',str(u[0].id))
+		brand=request.form['brand']
+		
+		u=session.query(Brand).filter_by(name=brand,username=username).one()
+		if u and valid_pw(username,password,u.password):
+			resp=make_response(redirect('profile'))
+			resp.set_cookie('user_id',str(u.id))
 			return resp
 		msg="Invalid Login!!"
 		return render_template('welcome.html',msg=msg)
