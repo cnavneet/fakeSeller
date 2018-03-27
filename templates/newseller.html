@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | New Seller</title>
+</head>
+<body>
+
+	<h2>{{brand.name}}</h2>
+
+	<h4>Add Seller Details</h4>
+
+	<h4 style="color:red">{{msg}}</h4>
+	<form action="{{url_for('newseller',user_id=brand.id)}}" method="POST">
+	<table>
+		<tr>
+			<td>
+				Seller name 
+			</td>
+			<td>
+				<input type="text" name="name" required>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Sub-brand/Product 
+			</td>
+			<td>
+				<input type="text" name="product" required>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Price 
+			</td>
+			<td>
+				<input type="text" name="price" required>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				
+			</td>
+			<td>
+				<input type="submit" value="Add Seller">
+			</td>
+		</tr>
+	</table>
+</form>
+
+	<p style="color: red">*Note: Please check the list of registered products with {{brand.name}} before registering the seller!!</p><br><br>
+
+	<h4>List of sub-brands/products registered with {{brand.name}}</h4>
+
+	<div>
+		<ul>
+	{% for i in sub %}
+	.<li>{{i.name}}</li>
+	{% endfor %}
+</ul>
+	</div>
+
+</body>
+</html>

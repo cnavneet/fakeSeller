@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Admin Login</title>
+	<style type="text/css">
+		.label{text-align: right}
+		.error{color:red;}
+	</style>
+</head>
+<body>
+
+	<h2>Admin Log In</h2>
+
+	<h4 class="error">{{msg}}</h4>
+
+	<form method="POST" action="{{url_for('admin')}}">
+		<table>
+			<tr>
+				<td class="label">
+					Admin Username 
+				</td>
+				<td>
+					<input type="text" name="username" required>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="label">
+					Admin Password  
+				</td>
+				<td>
+					<input type="password" name="password" required>
+				</td>
+			</tr>
+		</table>
+		<input type="submit" value="Admin Login">
+	</form>
+
+</body>
+</html>

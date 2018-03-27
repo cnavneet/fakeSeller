@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		FS | admin
+	</title>
+</head>
+<body>
+
+	<h2>Welcome admin..</h2>
+
+	<a href="{{url_for('admin')}}">log out</a>
+
+	<p>Below is the list of Brands registered with all the details. You can click on the brand names in order to view the list of sub-brands and their respective sellers</p>
+
+	{% for i in data %}
+
+	<div>
+		{{i.id}}<span>
+		<a href="{{url_for('branddetail',brand_id=i.id)}}"> {{i.name}}</a><br>
+		username: {{i.username}}<br>
+		password: {{i.password}}<br>
+		email id: {{i.enail}}
+		</span>
+	</div>
+	<br>
+
+	{% endfor %}
+
+</body>
+</html>

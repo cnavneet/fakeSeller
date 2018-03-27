@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FA | admin</title>
+	<style>
+		th{
+			border:1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<h2>{{ brand.name }} details...</h2>
+	<a href="{{url_for('admin')}}">log out</a>
+	<h4>Sub-brands of {{brand.name}} are listed under</h4>
+	{% for i in sub %}
+	<div>
+		{{i.id}}
+		<span>
+			{{i.name}}
+		</span>
+	</div>
+	{% endfor %}
+	<p>Thats all Sub-brands {{brand.name}} has...</p>
+	<br><br>
+	<h4>Sellers of {{brand.name}} are listed under</h4>
+	<table style="width:100%;text-align:center;border:1px solid black">
+		<tr>
+			<th>
+				Seller id
+			</th>
+			<th>
+				Seller name
+			</th>
+			<th>
+				Product/sub-brand
+			</th>
+			<th>
+				Price
+			</th>
+		</tr>
+
+		{% for i in seller %}
+		<tr style="border:1px solid black">
+			<td>
+				{{i.id}}
+			</td>
+			<td>
+				{{i.name}}
+			</td>
+			<td>
+				{{i.product}}
+			</td>
+			<td>
+				{{i.price}}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p>Thats all Sellers, who are registered with {{brand.name}}...</p>
+
+</body>
+</html>

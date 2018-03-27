@@ -38,8 +38,11 @@ def read_secure_cookie(name):
 def login(user):
 	set_secure_cookie('user_id',user)
 
+@app.route('/logout')
 def logout():
-	response.headers.add_header('Set-Cookie','user_id=; Path=/')
+	resp=make_response(redirect('/'))
+	resp.set_cookie('user_id',"")
+	return resp
 
 def initialize(*a,**kw):
 	initialize(*a,**kw)
@@ -141,10 +144,95 @@ def signup():
 @app.route('/profile')
 def profile():
 	if request.cookies.get('user_id'):
-		return "Welcome"+request.cookies.get('user_id')
+		user_id=int(request.cookies.get('user_id'))
+		brand=session.query(Brand).filter_by(id=user_id).one()
+		sub=session.query(SubBrand).filter_by(parent_id=user_id).all()
+		seller=session.query(Seller).filter_by(parent_id=user_id).all()
+		return render_template('profile.html',brand=brand,sub=sub,seller=seller)
 	else:
-		return redirect(url_for('signup'))
+		return redirect(url_for('signin'))
 
+@app.route('/profile/<int:user_id>/<int:product_id>/edit',methods=['POST','GET'])
+def pedit(user_id,product_id):
+	if not request.cookies.get('user_id'):
+		return redirect(url_for('signin'))
+	brands=session.query(Brand).filter_by(id=user_id).one()
+	brandItem=session.query(SubBrand).filter_by(id=product_id,parent_id=user_id).one()
+	if request.method=='POST':
+		brandItem.name=request.form['name']
+		u=request.form['name']
+		session.add(brandItem)
+		session.commit()
+		flash("Sub-brand/Product name editted successfully!!")
+
+		return redirect(url_for('profile'))
+
+	return render_template('bedit.html',brand=brands,sbrand=brandItem)
+
+@app.route('/digitaladmin',methods=['POST','GET'])
+def admin():
+	if request.method=='POST':
+		admin_username=request.form['username']
+		admin_password=request.form['password']
+
+		if admin_username=='digitalibiadmin' and admin_password=='adminadmin':
+			return redirect(url_for('adminpage'))
+		msg="Inavlid admin credentials!!"
+		return render_template('admin.html',msg=msg)
+	return render_template('admin.html')
+
+@app.route('/branddetail/<int:brand_id>/')
+def branddetail(brand_id):
+	brand=session.query(Brand).filter_by(id=brand_id).one()
+	sub=session.query(SubBrand).filter_by(parent_id=brand_id).all()
+	seller=session.query(Seller).filter_by(parent_id=brand_id).all()
+	return render_template('brandDetail.html',sub=sub,seller=seller,brand=brand)
+
+@app.route('/adminpage')
+def adminpage():
+	brandData=session.query(Brand).all()
+	return render_template('brandpage.html',data=brandData)
+
+@app.route('/profile/<int:user_id>/newbrand',methods=['GET','POST'])
+def newbrand(user_id):
+	brand=session.query(Brand).filter_by(id=user_id).one()
+	sub=session.query(SubBrand).filter_by(parent_id=user_id).all()
+	if request.method=='POST':
+		name=request.form['name']
+		u=session.query(SubBrand).filter_by(name=name,parent_id=user_id).all()
+		if u:
+			msg='Sub-brand/product with this name already exists!!'
+			return render_template('newbrand.html',brand=brand,sub=sub,msg=msg)
+		subb=SubBrand(name=name,parent_id=user_id)
+		session.add(subb)
+		session.commit()
+
+		flash("Sub-brand/product has been added and displayed in the corresponding section!")
+
+		return redirect(url_for('profile'))
+	return render_template('newbrand.html',brand=brand,sub=sub)
+
+@app.route('/profile/<int:user_id>/newseller',methods=['GET','POST'])
+def newseller(user_id):
+	brand=session.query(Brand).filter_by(id=user_id).one()
+	seller=session.query(Seller).filter_by(parent_id=user_id).all()
+	sub=session.query(SubBrand).filter_by(parent_id=user_id).all()
+	if request.method=='POST':
+		name=request.form['name']
+		product=request.form['product']
+		price=request.form['price']
+		u=session.query(Seller).filter_by(name=name,product=product,parent_id=user_id).all()
+		if u:
+			msg='Seller name with particular product already exists is already registered with the particular product!!'
+			return render_template('newseller.html',brand=brand,msg=msg,sub=sub)
+		subs=Seller(name=name,product=product,price=price,parent_id=user_id)
+		session.add(subs)
+		session.commit()
+
+		flash("Seller has be successfully registered and displayed in the corresponding section!!")
+
+		return redirect(url_for('profile'))
+	return render_template('newseller.html',brand=brand,sub=sub)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

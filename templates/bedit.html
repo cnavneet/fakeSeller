@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Sub Edit</title>
+</head>
+<body>
+
+	<h1>{{brand.name}} edits</h1>
+
+	<h4>Enter the new name of the sub brand/product ,i.e., {{sbrand.name}}</h4>
+
+	<form action="{{url_for('pedit',user_id=brand.id,product_id=sbrand.id)}}" method="POST">
+		<input type="text" name="name" placeholder="{{sbrand.name}}" required><br><br>
+		<input type="submit" value="Edit {{sbrand.name}}">
+	</form>
+
+</body>
+</html>

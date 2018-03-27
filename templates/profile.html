@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Profile</title>
+	<style>
+		th{
+			border:1px solid black;
+			background-color: black;
+			color: white;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>{{brand.name}}</h1>
+	<a href="{{url_for('logout')}}">logout</a>
+
+	{% with messages=get_flashed_messages() %}
+	{% if messages %}
+	<ul>
+		{% for message in messages %}
+		<li style="color: red"><strong>{{message}}</strong></li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
+
+	<h4>Sub brand/Products details</h4>
+	<a href="{{url_for('newbrand',user_id=brand.id)}}">Add a new Sub-brand/product</a>
+	<table style='border:1px solid black;text-align: center;width:100%'>
+		<tr>
+			<th>
+				Name of sub-brand/product
+			</th>
+			<th>
+				
+			</th>
+			<th>
+				
+			</th>
+		</tr>
+		{% for i in sub %}
+		<tr>
+			<td>
+				{{i.name}}
+			</td>
+			<td>
+				<a href="{{url_for('pedit',user_id=brand.id,product_id=i.id)}}">Edit</a>
+			</td>
+			<td>
+				<a href="#">Delete</a>
+			</td>
+		</tr>
+		{% endfor %}
+
+	</table>
+
+	<h4>Seller details</h4>
+	<a href="{{url_for('newseller',user_id=brand.id)}}">Add new sellers</a>
+	<table style="border:1px solid black;width:100%;text-align:center">
+		<tr>
+			<th>
+				Seller name
+			</th>
+			<th>
+				Sub-brand/Product
+			</th>
+			<th>
+				Price
+			</th>
+			<th>
+				
+			</th>
+			<th>
+				
+			</th>
+		</tr>
+		{% for i in seller %}
+		<tr>
+			<td>
+				{{i.name}}
+			</td>
+			<td>
+				{{i.product}}
+			</td>
+			<td>
+				{{i.price}}
+			</td>
+			<td>
+				<a href="#">Edit</a>
+			</td>
+			<td>
+				<a href="#">Delete</a>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+</body>
+</html>

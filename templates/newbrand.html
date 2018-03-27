@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | New Brand</title>
+</head>
+<body>
+
+	<h2>{{brand.name}}</h2>
+
+	<div>
+		<h4>Enter detail of sub-brand/product to be created</h4>
+		<h4 style="color:red">{{msg}}</h4>
+		<form action="{{url_for('newbrand',user_id=brand.id)}}" method="POST">
+			<table>
+				<tr>
+					<td>
+						
+					</td>
+					<td>
+						Name 
+					</td>
+					<td>
+						<input type="text" name="name" required>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						
+					</td>
+					<td>
+						
+					</td>
+					<td>
+						<input type="submit" value="Make new sub-brand/product">
+					</td>
+				</tr>
+			</table>
+		</form>
+		<p style="color: red">*Note: Do not enter the name of the sub-brand/product which already exists.</p>
+	</div>
+	<div>
+		<h4>List of sub-brands/products already created by {{brand.name}}</h4>
+		<ul>
+		{% for i in sub %}
+		<li>{{i.name}}</li>
+		{% endfor %}
+		<br>
+		That's all sub-brands/products {{brand.name}} possess yet!!
+	</ul>
+	</div>
+</body>
+</html>
