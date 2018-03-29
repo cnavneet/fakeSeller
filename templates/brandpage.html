@@ -9,6 +9,16 @@
 
 	<h2>Welcome admin..</h2>
 
+	{% with messages=get_flashed_messages() %}
+	{% if messages %}
+	<ul>
+		{% for message in messages %}
+		<li style="color: red"><strong>{{message}}</strong></li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
+
 	<a href="{{url_for('admin')}}">log out</a>
 
 	<p>Below is the list of Brands registered with all the details. You can click on the brand names in order to view the list of sub-brands and their respective sellers</p>
@@ -16,12 +26,13 @@
 	{% for i in data %}
 
 	<div>
-		{{i.id}}<span>
-		<a href="{{url_for('branddetail',brand_id=i.id)}}"> {{i.name}}</a><br>
+		<a href="{{url_for('branddetail',brand_id=i.id)}}"> {{i.name}}</a>
+		<br>
 		username: {{i.username}}<br>
 		password: {{i.password}}<br>
 		email id: {{i.enail}}
-		</span>
+		<br>
+		<a href="{{url_for('addel',brand_id=i.id)}}">Delete {{i.name}} data</a>
 	</div>
 	<br>
 

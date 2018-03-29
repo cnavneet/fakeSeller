@@ -48,7 +48,7 @@
 				<a href="{{url_for('pedit',user_id=brand.id,product_id=i.id)}}">Edit</a>
 			</td>
 			<td>
-				<a href="#">Delete</a>
+				<a href="{{url_for('pdelete',user_id=brand.id,product_id=i.id)}}">Delete</a>
 			</td>
 		</tr>
 		{% endfor %}
@@ -87,10 +87,10 @@
 				{{i.price}}
 			</td>
 			<td>
-				<a href="#">Edit</a>
+				<a href="{{url_for('sedit',user_id=brand.id,seller_id=i.id)}}">Edit</a>
 			</td>
 			<td>
-				<a href="#">Delete</a>
+				<a href="{{url_for('sdelete',user_id=brand.id,seller_id=i.id)}}">Delete</a>
 			</td>
 		</tr>
 		{% endfor %}

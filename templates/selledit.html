@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Seller Edit</title>
+	<style>
+		.error{
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	<h1>{{brand.name}}</h1>
+	<h4>Edit datils of seller name {{seller.name}}..</h4>
+	<form method="POST" action="{{url_for('sedit',user_id=brand.id,seller_id=seller.id)}}">
+		<table>
+			<tr>
+				<td>
+					Name 
+				</td>
+				<td>
+					<input type="text" name="name" placeholder="{{seller.name}}" required>
+				</td>
+				<td>
+					
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Sub-brand/Product
+				</td>
+				<td>
+					<input type="text" name="product" placeholder="{{seller.product}}" required>
+				</td>
+				<td class="error">{{msg}}</td>
+			</tr>
+			<tr>
+				<td>
+					Price 
+				</td>
+				<td>
+					<input type="text" name="price" placeholder="{{seller.price}}" required>
+				</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td>
+					
+				</td>
+				<td>
+					<input type="submit" type="submit" value="Edit {{seller.name}}">
+				</td>
+				<td></td>
+			</tr>
+		</table>
+	</form>
+
+	<p class="error">
+		*Note: The name of new sub-brand/product for {{seller.name}} must be in the current sub-brand/product list of {{brand.name}}
+	</p>
+
+	<h4>List of sub-brands/products registered with {{brand.name}}</h4>
+	<ul>
+	{% for i in sub %}
+	<li>{{i.name}}</li>
+	{% endfor %}
+</ul>
+
+</body>
+</html>

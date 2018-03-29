@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>FS | Delete</title>
+</head>
+<body>
+
+	<h1>{{brand.name}}</h1>
+
+	<h4>Are you sure, you want to delete <br>{{seller.name}} ,<br> product: {{seller.product}} , and<br>price: {{seller.price}} <br>from the {{brand.name}} database?</h4>
+
+	<form action="{{url_for('sdelete',user_id=brand.id,seller_id=seller.id)}}" method="POST">
+		<input type="submit" value="Delete {{seller.name}} data confirmed!!">
+	</form>
+
+</body>
+</html>
